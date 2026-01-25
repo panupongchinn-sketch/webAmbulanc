@@ -1,20 +1,19 @@
+// https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from "@tailwindcss/vite";
-
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-
-  ssr: false, // ✅ สำคัญมาก กัน prerender / พังตอน build
-
-  nitro: { preset: "static" },
-
+  nitro: {
+    preset: "static",
+  },
   css: ["./app/assets/css/main.css"],
-  vite: { plugins: [tailwindcss()] },
-
+  vite: {
+    plugins: [tailwindcss()],
+  },
   runtimeConfig: {
     public: {
-      supabaseUrl: "",
-      supabaseKey: "",
+      SUPABASE_URL: process.env.SUPABASE_URL,
+      SUPABASE_KEY: process.env.SUPABASE_KEY,
     },
   },
 });
