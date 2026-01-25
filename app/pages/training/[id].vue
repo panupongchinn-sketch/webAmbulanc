@@ -32,11 +32,12 @@
       <div class="lg:col-span-2">
         <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
           <div class="p-4 sm:p-6 border-b border-slate-100">
-            <div class="aspect-[16/9] rounded-md bg-white border border-slate-100 flex items-center justify-center overflow-hidden">
+            <!-- ✅ FIX: รูปเต็มความกว้างบนมือถือ (ไม่ล็อก 16:9) -->
+            <div class="w-full overflow-hidden rounded-md bg-white border border-slate-100">
               <img
                 :src="course?.image_url || fallbackImg"
                 :alt="course?.name || 'training'"
-                class="max-h-full max-w-full object-contain"
+                class="block w-full h-auto object-contain"
                 loading="lazy"
                 @error="onImgError"
               />

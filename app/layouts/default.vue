@@ -1,15 +1,12 @@
 <template>
   <div class="min-h-screen bg-white text-slate-900 flex flex-col">
-    <!-- =========================
-      LOCKED TOP HEADER (fixed) - ธีม M&B
-    ========================== -->
     <header
       ref="headerEl"
       class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200"
     >
       <div class="max-w-none mx-auto px-4 sm:px-6 lg:px-10">
         <!-- Row 1: Logo + Search + Right actions -->
-        <div class="h-16 flex items-center gap-4">
+        <div class="h-16 flex items-center gap-3 sm:gap-4">
           <!-- Logo -->
           <NuxtLink to="/" class="flex items-center gap-3 shrink-0">
             <img src="/MBLogo.png" alt="M&B" class="h-9 w-auto object-contain" />
@@ -144,13 +141,13 @@
           </div>
         </div>
 
-        <!-- Row 2: Nav -->
-        <nav class="hidden md:flex items-center gap-6 h-12 text-sm">
+        <!-- ✅ Row 2: Nav (ALL screens + horizontal scroll on mobile) -->
+        <nav class="flex items-center gap-4 h-12 text-sm overflow-x-auto whitespace-nowrap no-scrollbar">
           <NuxtLink
             v-for="item in nav"
             :key="item.to"
             :to="item.to"
-            class="font-semibold text-slate-800 hover:text-red-700"
+            class="font-semibold text-slate-800 hover:text-red-700 shrink-0"
             :class="route.path === item.to ? 'text-red-600' : ''"
           >
             {{ item.label }}
@@ -159,18 +156,10 @@
       </div>
     </header>
 
-    <!-- =========================
-      MAIN SLOT (ชดเชย header)
-    ========================== -->
     <main class="flex-1 w-full max-w-none mx-auto px-4 sm:px-6 lg:px-10 pt-[112px] pb-10">
       <slot />
     </main>
 
-    <!-- =========================
-      FOOTER
-      ✅ เอาบล็อกใหญ่ในกรอบแดงออกหมดแล้ว
-      ✅ เหลือแค่แถบล่าง และทุกลิงก์พาไป /contact
-    ========================== -->
     <footer class="bg-red-600 text-white mt-auto">
       <div class="max-w-none mx-auto px-4 sm:px-6 lg:px-10 py-6">
         <div class="flex flex-col sm:flex-row gap-3 sm:gap-6 text-xs text-white/85">
@@ -186,11 +175,11 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue"
 import { useRoute } from "vue-router"
 
 const route = useRoute()
 
-// ✅ เมนู (กดแล้วไปหน้าได้เลย)
 const nav = [
   { label: "ผลิตภัณฑ์", to: "/product" },
   { label: "คอร์สอบรม", to: "/training" },
@@ -198,14 +187,11 @@ const nav = [
   { label: "ติดต่อเรา", to: "/contact" },
 ]
 
-// ✅ Search state กลาง (ทุกหน้าใช้ร่วมกัน)
 const q = useState<string>("mb_search_q", () => "")
 const showMobileSearch = ref(false)
 
-// mock
 const compareCount = ref(0)
 
-// language
 const langOpen = ref(false)
 const langLabel = ref("International | en")
 const setLang = (v: string) => {
@@ -213,7 +199,6 @@ const setLang = (v: string) => {
   langOpen.value = false
 }
 
-// search action (แค่ปิด mobile search)
 const onSearch = () => {
   showMobileSearch.value = false
 }
@@ -223,5 +208,13 @@ const onSearch = () => {
 @import url("https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap");
 * {
   font-family: "Kanit", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 </style>
