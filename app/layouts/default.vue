@@ -1,6 +1,6 @@
 ﻿<template>
-  <div class="min-h-screen bg-slate-50 text-slate-900">
-    <div class="fixed top-0 left-0 right-0 z-[70] bg-[#0B4AA2] text-white">
+  <div class="min-h-screen bg-white text-slate-900">
+    <div v-if="!isHome" class="fixed top-0 left-0 right-0 z-[70] bg-emerald-800 text-white">
       <div class="max-w-none mx-auto px-4 sm:px-6 lg:px-10">
         <div class="h-10 flex items-center justify-between text-xs sm:text-sm">
           <div class="flex items-center gap-4">
@@ -21,8 +21,11 @@
       </div>
     </div>
 
-    <div class="pt-10 min-h-screen flex flex-col">
-      <header class="sticky top-10 z-[60] bg-white border-b border-slate-200">
+    <div :class="isHome ? 'min-h-screen flex flex-col' : 'pt-10 min-h-screen flex flex-col'">
+      <header
+        v-if="!isHome"
+        class="sticky top-10 z-[60] bg-white/95 border-b border-emerald-100 backdrop-blur"
+      >
         <div class="max-w-none mx-auto px-4 sm:px-6 lg:px-10">
           <div class="h-16 flex items-center gap-3 sm:gap-4">
             <NuxtLink to="/" class="flex items-center gap-3 shrink-0">
@@ -43,9 +46,9 @@
               <NuxtLink
                 v-if="!isLoggedIn"
                 to="/login"
-                class="h-9 inline-flex items-center gap-2 rounded-full bg-[#0B4AA2] px-4 text-sm font-semibold text-white shadow-sm
-                       hover:bg-[#083A7E] active:bg-[#062F67] transition-colors
-                       focus:outline-none focus:ring-2 focus:ring-[#0B4AA2]/30"
+                class="h-9 inline-flex items-center gap-2 rounded-full bg-emerald-700 px-4 text-sm font-semibold text-white shadow-sm
+                       hover:bg-emerald-800 active:bg-emerald-900 transition-colors
+                       focus:outline-none focus:ring-2 focus:ring-emerald-700/30"
               >
                 เข้าสู่ระบบ
               </NuxtLink>
@@ -68,8 +71,8 @@
                 v-for="item in nav"
                 :key="item.to"
                 :to="item.to"
-                class="font-semibold text-slate-800 hover:text-[#0B4AA2] shrink-0"
-                :class="route.path === item.to ? 'text-[#0B4AA2]' : ''"
+                class="font-semibold text-slate-800 hover:text-emerald-700 shrink-0"
+                :class="route.path === item.to ? 'text-emerald-700' : ''"
               >
                 {{ item.label }}
               </NuxtLink>
@@ -78,11 +81,14 @@
         </div>
       </header>
 
-      <main class="flex-1 w-full max-w-none mx-auto px-4 sm:px-6 lg:px-10 py-8">
+      <main
+        class="flex-1 w-full max-w-none mx-auto bg-white"
+        :class="isHome ? 'px-0 py-0' : 'px-4 sm:px-6 lg:px-10 py-8'"
+      >
         <slot />
       </main>
 
-      <footer class="bg-[#0B4AA2] text-white mt-auto">
+      <footer v-if="!isHome" class="bg-emerald-800 text-white mt-auto">
         <div class="max-w-none mx-auto px-4 sm:px-6 lg:px-10 py-6">
           <div class="flex flex-col sm:flex-row gap-3 sm:gap-6 text-xs text-white/85">
             <NuxtLink to="/contact" class="hover:underline">Data privacy</NuxtLink>
@@ -102,13 +108,13 @@ import { computed, onMounted, ref } from "vue"
 import { useRoute } from "vue-router"
 
 const route = useRoute()
+const isHome = computed(() => route.path === "/")
 
 const auth = useAuth?.() as any
 const user = auth?.user
 const getSession = auth?.getSession
 const signOut = auth?.signOut
 
-const showDevAdminBtn = true
 const adminTest = ref(false)
 
 onMounted(async () => {
@@ -125,11 +131,6 @@ const isLoggedIn = computed(() => {
   const real = !!user?.value
   return real || adminTest.value
 })
-
-const toggleAdminTest = () => {
-  adminTest.value = !adminTest.value
-  localStorage.setItem("ADMIN_TEST", adminTest.value ? "1" : "0")
-}
 
 const onLogout = async () => {
   try {
