@@ -1,14 +1,14 @@
 <template>
   <div class="min-h-screen bg-[var(--wmc-bg)] text-[var(--wmc-text)]">
     <header class="sticky top-0 z-40 border-b border-emerald-100 bg-white/95 backdrop-blur">
-      <div class="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-4 sm:px-6">
-        <div class="flex items-center gap-3">
-          <div class="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[var(--wmc-primary)] text-[var(--wmc-primary)]">
+      <div class="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-3 sm:h-20 sm:px-6">
+        <div class="flex min-w-0 items-center gap-2 sm:gap-3">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-[var(--wmc-primary)] text-[var(--wmc-primary)] sm:h-12 sm:w-12">
             <span class="text-lg font-extrabold">W</span>
           </div>
-          <div class="leading-tight">
-            <p class="text-sm text-emerald-700">โรงพยาบาลเวิลด์เมดิคอล</p>
-            <p class="text-lg font-bold text-emerald-900">บริการรถพยาบาลฉุกเฉิน</p>
+          <div class="min-w-0 leading-tight">
+            <p class="hidden text-xs text-emerald-700 sm:block sm:text-sm">โรงพยาบาลเวิลด์เมดิคอล</p>
+            <p class="truncate text-sm font-bold text-emerald-900 sm:text-lg">บริการรถพยาบาลฉุกเฉิน</p>
           </div>
         </div>
 
@@ -21,38 +21,42 @@
 
         <a
           href="tel:023407777"
-          class="inline-flex items-center gap-2 rounded-full bg-emerald-700 px-5 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-800"
+          class="inline-flex items-center gap-2 rounded-full bg-emerald-700 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-800 sm:px-5 sm:text-sm"
         >
           <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 3.1 5.18 2 2 0 0 1 5.1 3h3a2 2 0 0 1 2 1.72c.12.9.33 1.77.64 2.6a2 2 0 0 1-.45 2.11L9.1 10.62a16 16 0 0 0 4.28 4.28l1.19-1.2a2 2 0 0 1 2.11-.45c.83.31 1.7.52 2.6.64A2 2 0 0 1 22 16.92z"/>
           </svg>
-          02 340 7777
+          <span class="hidden sm:inline">02 340 7777</span>
+          <span class="sm:hidden">โทร</span>
         </a>
       </div>
     </header>
 
-    <section class="relative isolate h-[420px] w-full overflow-hidden sm:h-[520px]">
-      <img
-        src="/IMG_3356-1040x693-1.jpg"
-        alt="รถพยาบาลฉุกเฉิน"
-        class="h-full w-full object-cover"
-      />
+    <section class="relative isolate h-[360px] w-full overflow-hidden sm:h-[520px]">
+      <Transition name="fly-left" mode="out-in">
+        <img
+          :key="heroSlides[activeHeroSlide]"
+          :src="heroSlides[activeHeroSlide]"
+          alt="รถพยาบาลฉุกเฉิน"
+          class="h-full w-full object-cover"
+        />
+      </Transition>
       <div class="absolute inset-0 bg-gradient-to-r from-emerald-900/45 via-emerald-400/25 to-emerald-300/35"></div>
       <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_30%,rgba(255,255,255,0.28),transparent_45%),radial-gradient(circle_at_82%_24%,rgba(110,231,183,0.25),transparent_42%),linear-gradient(to_bottom,rgba(16,185,129,0.18),rgba(255,255,255,0.06))]"></div>
 
-      <div class="absolute inset-0 mx-auto flex h-full w-full max-w-7xl items-center px-4 sm:px-6">
-        <div class="max-w-3xl rounded-2xl border border-white/35 bg-white/8 p-6 text-white shadow-[0_8px_40px_rgba(16,185,129,0.2)] backdrop-blur-md sm:p-8">
-          <p class="text-sm font-semibold tracking-[0.25em] text-emerald-200">บริการฉุกเฉินตลอด 24 ชั่วโมง</p>
-          <h1 class="mt-3 text-4xl font-extrabold leading-tight sm:text-6xl">บริการรถพยาบาลฉุกเฉิน</h1>
-          <p class="mt-4 max-w-2xl text-base leading-relaxed text-emerald-50/90 sm:text-lg">
+      <div class="absolute inset-0 mx-auto flex h-full w-full max-w-7xl items-center px-3 sm:px-6">
+        <div class="max-w-3xl rounded-2xl border border-white/35 bg-white/8 p-4 text-white shadow-[0_8px_40px_rgba(16,185,129,0.2)] backdrop-blur-md sm:p-8">
+          <p class="text-[11px] font-semibold tracking-[0.2em] text-emerald-200 sm:text-sm sm:tracking-[0.25em]">บริการฉุกเฉินตลอด 24 ชั่วโมง</p>
+          <h1 class="mt-2 text-3xl font-extrabold leading-tight sm:mt-3 sm:text-6xl">บริการรถพยาบาลฉุกเฉิน</h1>
+          <p class="mt-3 max-w-2xl text-sm leading-relaxed text-emerald-50/90 sm:mt-4 sm:text-lg">
             บริการรับส่งผู้ป่วยโดยทีมบุคลากรทางการแพทย์ พร้อมอุปกรณ์ช่วยชีวิตมาตรฐาน รองรับพื้นที่กรุงเทพฯ และปริมณฑล
           </p>
 
-          <div class="mt-8 flex flex-wrap gap-3">
-            <a href="#contact" class="inline-flex items-center rounded-xl bg-[var(--wmc-accent)] px-6 py-3 text-sm font-bold text-emerald-950 transition hover:brightness-95">
+          <div class="mt-5 flex flex-wrap gap-2 sm:mt-8 sm:gap-3">
+            <a href="#contact" class="inline-flex w-full items-center justify-center rounded-xl bg-[var(--wmc-accent)] px-5 py-2.5 text-sm font-bold text-emerald-950 transition hover:brightness-95 sm:w-auto sm:px-6 sm:py-3">
               เรียกรถพยาบาลทันที
             </a>
-            <a href="#service" class="inline-flex items-center rounded-xl border border-white/50 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
+            <a href="#service" class="inline-flex w-full items-center justify-center rounded-xl border border-white/50 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10 sm:w-auto sm:px-6 sm:py-3">
               ดูรายละเอียดบริการ
             </a>
           </div>
@@ -73,8 +77,8 @@
         <div class="relative mx-auto grid w-full max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:items-center">
           <div class="lg:col-span-6">
             <p class="text-base font-semibold text-slate-700">บริการสำหรับผู้ป่วย</p>
-            <h2 class="mt-3 text-4xl font-extrabold leading-tight text-emerald-900 sm:text-6xl">บริการรถฉุกเฉิน</h2>
-            <p class="mt-5 max-w-xl text-lg leading-relaxed text-slate-700">
+            <h2 class="mt-3 text-3xl font-extrabold leading-tight text-emerald-900 sm:text-6xl">บริการรถฉุกเฉิน</h2>
+            <p class="mt-5 max-w-xl text-base leading-relaxed text-slate-700 sm:text-lg">
               เพราะเราพร้อมสำหรับการบริการสำหรับลูกค้าทุกท่าน เราจึงเตรียมสิ่งอำนวยความสะดวกไว้อย่างครบครัน
               ไม่ว่าจะเป็นสถานที่จอดรถที่กว้างขวาง สะดวกสบาย รวมถึงรักษาความปลอดภัย
             </p>
@@ -93,7 +97,7 @@
               <img
                 src="/rectangle_1015.jpg"
                 alt="บริการรถพยาบาลฉุกเฉิน"
-                class="relative h-[290px] w-full rounded-2xl object-cover shadow-sm sm:h-[360px]"
+                class="relative h-[230px] w-full rounded-2xl object-cover shadow-sm sm:h-[360px]"
               />
             </div>
           </div>
@@ -102,16 +106,16 @@
 
       <section id="packages" class="bg-[#f7f8f7] py-14 sm:py-20">
         <div class="mx-auto w-full max-w-4xl px-4 sm:px-6">
-          <h3 class="text-3xl font-extrabold leading-tight text-emerald-900 sm:text-5xl">
+          <h3 class="text-2xl font-extrabold leading-tight text-emerald-900 sm:text-5xl">
             โรงพยาบาลไทยนครินทร์ มีรถพยาบาลฉุกเฉิน (Ambulance) ที่มีบุคลากร
             และอุปกรณ์ทางการแพทย์ที่พร้อมให้การช่วยเหลือผู้ป่วยอย่างมีคุณภาพ ด้วยมาตรฐานวิชาชีพ
           </h3>
-          <p class="mt-5 text-lg leading-relaxed text-slate-800">
+          <p class="mt-5 text-base leading-relaxed text-slate-800 sm:text-lg">
             มีการทำงานเป็นทีม และการประสานงานอย่างรวดเร็วและปลอดภัย กรณีผู้ป่วยวิกฤติต่อเนื่องที่บ้านมีเหตุฉุกเฉิน
             ผู้ดูแลสามารถเรียกใช้บริการรถฉุกเฉิน ดังนี้
           </p>
 
-          <ul class="mt-8 space-y-4 text-lg leading-relaxed text-slate-800">
+          <ul class="mt-8 space-y-4 text-base leading-relaxed text-slate-800 sm:text-lg">
             <li class="flex gap-3">
               <span class="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500"></span>
               ชื่อ - สกุล ผู้แจ้ง พร้อมหมายเลขโทรศัพท์ เพื่อให้โรงพยาบาลสามารถติดต่อกลับได้ รวมทั้งให้คำแนะนำเบื้องต้น
@@ -190,6 +194,31 @@
   </div>
 </template>
 
+<script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from "vue"
+
+const heroSlides = [
+  "/IMG_3356-1040x693-1.jpg",
+  "/ablvan1.jpg",
+  "/rectangle_1015.jpg",
+]
+
+const activeHeroSlide = ref(0)
+let heroSliderTimer: ReturnType<typeof setInterval> | null = null
+
+const nextHeroSlide = () => {
+  activeHeroSlide.value = (activeHeroSlide.value + 1) % heroSlides.length
+}
+
+onMounted(() => {
+  heroSliderTimer = setInterval(nextHeroSlide, 3000)
+})
+
+onBeforeUnmount(() => {
+  if (heroSliderTimer) clearInterval(heroSliderTimer)
+})
+</script>
+
 <style scoped>
 :root {
   --wmc-primary: #006b4f;
@@ -225,5 +254,26 @@
   top: 30px;
   width: 76px;
   height: 16px;
+}
+
+.fly-left-enter-active,
+.fly-left-leave-active {
+  transition: transform 0.6s ease, opacity 0.6s ease;
+}
+
+.fly-left-enter-from {
+  transform: translateX(-16%);
+  opacity: 0;
+}
+
+.fly-left-leave-to {
+  transform: translateX(16%);
+  opacity: 0;
+}
+
+.fly-left-enter-to,
+.fly-left-leave-from {
+  transform: translateX(0);
+  opacity: 1;
 }
 </style>
