@@ -4,11 +4,13 @@
     <section class="relative w-full">
       <div class="relative h-[520px] sm:h-[640px] w-full overflow-hidden bg-black">
         <video
+          ref="heroVideo"
           class="absolute inset-0 h-full w-full object-cover"
           autoplay
           muted
           loop
           playsinline
+          webkit-playsinline
           preload="metadata"
         >
           <source
@@ -504,6 +506,7 @@ const fallbackImg = "https://picsum.photos/seed/product/1200/900"
 const PARTNERS_KEY = "partners"
 const PROJECTS_KEY = "projects"
 const { getValue } = useSharedStore()
+const heroVideo = ref<HTMLVideoElement | null>(null)
 
 const products = ref<ProductRow[]>([])
 const loading = ref(true)
@@ -582,7 +585,35 @@ const loadPartnerLogosLocal = async () => {
   }
 }
 
+const tryPlayHeroVideo = async () => {
+  const video = heroVideo.value
+  if (!video) return
+
+  video.muted = true
+  video.defaultMuted = true
+  video.playsInline = true
+  video.autoplay = true
+
+  try {
+    await video.play()
+  } catch {
+    // Mobile browsers may block until first user interaction.
+  }
+}
+
 onMounted(() => {
+  void tryPlayHeroVideo()
+  setTimeout(() => {
+    void tryPlayHeroVideo()
+  }, 500)
+
+  document.addEventListener("touchstart", () => {
+    void tryPlayHeroVideo()
+  }, { once: true, passive: true })
+  document.addEventListener("click", () => {
+    void tryPlayHeroVideo()
+  }, { once: true })
+
   loadProducts()
   loadProjectsLocal()
   loadPartnerLogosLocal()
