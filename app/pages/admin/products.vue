@@ -196,7 +196,8 @@ type ProductRow = {
   brand: string | null
 }
 
-const LOCAL_PRODUCTS_KEY = "yushi_products"
+const STORE_KEY = "products"
+const { getValue, setValue } = useSharedStore()
 
 const products = ref<ProductRow[]>([])
 const loading = ref(false)
@@ -217,22 +218,6 @@ const uid = () => {
     return (globalThis as any).crypto.randomUUID() as string
   }
   return `prod_${Math.random().toString(16).slice(2)}_${Date.now()}`
-}
-
-const readLocalProducts = (): ProductRow[] => {
-  if (typeof window === "undefined") return []
-  try {
-    const raw = window.localStorage.getItem(LOCAL_PRODUCTS_KEY)
-    const parsed = raw ? (JSON.parse(raw) as ProductRow[]) : []
-    return Array.isArray(parsed) ? parsed : []
-  } catch {
-    return []
-  }
-}
-
-const writeLocalProducts = (rows: ProductRow[]) => {
-  if (typeof window === "undefined") return
-  window.localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(rows))
 }
 
 const resetForm = () => {
@@ -272,7 +257,8 @@ const loadProducts = async () => {
   loading.value = true
   errorMsg.value = ""
   try {
-    products.value = readLocalProducts().sort((a, b) => {
+    const rows = await getValue<ProductRow>(STORE_KEY)
+    products.value = rows.sort((a, b) => {
       const brandA = (a.brand || "").toLowerCase()
       const brandB = (b.brand || "").toLowerCase()
       if (brandA !== brandB) return brandA.localeCompare(brandB)
@@ -306,8 +292,9 @@ const createProduct = async () => {
       image_url: form.imageDataUrl || null,
     }
 
-    const nextRows = [{ id: uid(), ...payload } as ProductRow, ...readLocalProducts()]
-    writeLocalProducts(nextRows)
+    const current = await getValue<ProductRow>(STORE_KEY)
+    const nextRows = [{ id: uid(), ...payload } as ProductRow, ...current]
+    await setValue<ProductRow>(STORE_KEY, nextRows)
 
     successMsg.value = "เพิ่มสินค้าสำเร็จ"
     resetForm()
@@ -323,8 +310,9 @@ const deleteProduct = async (id: string) => {
   if (!window.confirm("ลบสินค้านี้ใช่ไหม?")) return
 
   try {
-    const nextRows = readLocalProducts().filter((x) => x.id !== id)
-    writeLocalProducts(nextRows)
+    const current = await getValue<ProductRow>(STORE_KEY)
+    const nextRows = current.filter((x) => x.id !== id)
+    await setValue<ProductRow>(STORE_KEY, nextRows)
     successMsg.value = "ลบสินค้าแล้ว"
     await loadProducts()
   } catch (e: any) {

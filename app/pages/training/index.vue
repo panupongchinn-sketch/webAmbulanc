@@ -105,7 +105,8 @@ type TrainingCourseRow = {
   created_at: string | null
 }
 
-const TRAINING_KEY = "yushi_training_courses"
+const TRAINING_KEY = "training_courses"
+const { getValue } = useSharedStore()
 
 // ✅ ใช้ search จาก header (layout)
 const q = useState<string>("mb_search_q", () => "")
@@ -119,12 +120,7 @@ const loadCourses = async () => {
   loading.value = true
   error.value = ""
   try {
-    if (typeof window === "undefined") {
-      courses.value = []
-      return
-    }
-    const raw = localStorage.getItem(TRAINING_KEY)
-    const arr = raw ? JSON.parse(raw) : []
+    const arr = await getValue<TrainingCourseRow>(TRAINING_KEY)
     courses.value = Array.isArray(arr) ? (arr as TrainingCourseRow[]) : []
   } catch (err: any) {
     error.value = err?.message || "Failed to load training_course"

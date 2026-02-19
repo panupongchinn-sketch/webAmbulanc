@@ -117,7 +117,8 @@ type ProductRow = {
   unit: string | null
 }
 
-const PRODUCTS_KEY = "yushi_products"
+const PRODUCTS_KEY = "products"
+const { getValue } = useSharedStore()
 
 // ✅ ใช้ค่า search จาก header (layout)
 const q = useState<string>("mb_search_q", () => "")
@@ -132,12 +133,7 @@ const loadProducts = async () => {
   loading.value = true
   error.value = ""
   try {
-    if (typeof window === "undefined") {
-      products.value = []
-      return
-    }
-    const raw = localStorage.getItem(PRODUCTS_KEY)
-    const arr = raw ? JSON.parse(raw) : []
+    const arr = await getValue<ProductRow>(PRODUCTS_KEY)
     products.value = Array.isArray(arr) ? (arr as ProductRow[]) : []
   } catch (err: any) {
     error.value = err?.message || "Unknown error"

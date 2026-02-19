@@ -694,9 +694,10 @@ type ContactMessageRow = {
   created_at: string
 }
 
-const STORAGE_KEY = "yushi_projects"
-const PARTNERS_KEY = "yushi_partner_logos"
-const CONTACT_MESSAGES_KEY = "yushi_contact_messages"
+const STORAGE_KEY = "projects"
+const PARTNERS_KEY = "partners"
+const CONTACT_MESSAGES_KEY = "contact_messages"
+const { getValue, setValue } = useSharedStore()
 
 const projects = ref<ProjectRow[]>([])
 const partnerLogos = ref<PartnerLogoRow[]>([])
@@ -746,52 +747,43 @@ const formatDate = (iso: string) => {
   }
 }
 
-const loadFromStorage = () => {
-  if (!isClient()) return
+const loadFromStorage = async () => {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    const arr = raw ? (JSON.parse(raw) as any[]) : []
+    const arr = await getValue<ProjectRow>(STORAGE_KEY)
     projects.value = Array.isArray(arr) ? (arr as ProjectRow[]) : []
   } catch {
     projects.value = []
   }
 }
 
-const saveToStorage = () => {
-  if (!isClient()) return
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(projects.value))
+const saveToStorage = async () => {
+  await setValue<ProjectRow>(STORAGE_KEY, projects.value)
 }
 
-const loadPartnersFromStorage = () => {
-  if (!isClient()) return
+const loadPartnersFromStorage = async () => {
   try {
-    const raw = window.localStorage.getItem(PARTNERS_KEY)
-    const arr = raw ? (JSON.parse(raw) as any[]) : []
+    const arr = await getValue<PartnerLogoRow>(PARTNERS_KEY)
     partnerLogos.value = Array.isArray(arr) ? (arr as PartnerLogoRow[]) : []
   } catch {
     partnerLogos.value = []
   }
 }
 
-const savePartnersToStorage = () => {
-  if (!isClient()) return
-  window.localStorage.setItem(PARTNERS_KEY, JSON.stringify(partnerLogos.value))
+const savePartnersToStorage = async () => {
+  await setValue<PartnerLogoRow>(PARTNERS_KEY, partnerLogos.value)
 }
 
-const loadContactMessagesFromStorage = () => {
-  if (!isClient()) return
+const loadContactMessagesFromStorage = async () => {
   try {
-    const raw = window.localStorage.getItem(CONTACT_MESSAGES_KEY)
-    const arr = raw ? (JSON.parse(raw) as any[]) : []
+    const arr = await getValue<ContactMessageRow>(CONTACT_MESSAGES_KEY)
     contactMessages.value = Array.isArray(arr) ? (arr as ContactMessageRow[]) : []
   } catch {
     contactMessages.value = []
   }
 }
 
-const saveContactMessagesToStorage = () => {
-  if (!isClient()) return
-  window.localStorage.setItem(CONTACT_MESSAGES_KEY, JSON.stringify(contactMessages.value))
+const saveContactMessagesToStorage = async () => {
+  await setValue<ContactMessageRow>(CONTACT_MESSAGES_KEY, contactMessages.value)
 }
 
 const resetForm = () => {
@@ -813,7 +805,7 @@ const uid = () => {
   return `p_${Math.random().toString(16).slice(2)}_${Date.now()}`
 }
 
-const onSubmit = () => {
+const onSubmit = async () => {
   const name = form.value.name.trim()
   const description = form.value.description.trim()
   if (!name || !description) return
@@ -839,7 +831,7 @@ const onSubmit = () => {
         updatedAt: nowIso(),
       }
       projects.value.splice(i, 1, updated)
-      saveToStorage()
+      await saveToStorage()
       resetForm()
       return
     }
@@ -858,7 +850,7 @@ const onSubmit = () => {
   }
 
   projects.value = [row, ...projects.value]
-  saveToStorage()
+  await saveToStorage()
   resetForm()
 }
 
@@ -877,23 +869,23 @@ const editProject = (id: string) => {
   if (isClient()) window.scrollTo({ top: 0, behavior: "smooth" })
 }
 
-const removeProject = (id: string) => {
+const removeProject = async (id: string) => {
   if (!isClient()) return
   if (!window.confirm("ลบโปรเจคนี้ใช่ไหม?")) return
   projects.value = projects.value.filter((x) => x.id !== id)
-  saveToStorage()
+  await saveToStorage()
   if (editingId.value === id) resetForm()
 }
 
-const clearAll = () => {
+const clearAll = async () => {
   if (!isClient()) return
   if (!window.confirm("ลบทั้งหมดใช่ไหม?")) return
   projects.value = []
-  saveToStorage()
+  await saveToStorage()
   resetForm()
 }
 
-const move = (index: number, delta: number) => {
+const move = async (index: number, delta: number) => {
   const next = index + delta
   if (next < 0 || next >= projects.value.length) return
   const arr = projects.value.slice()
@@ -902,7 +894,7 @@ const move = (index: number, delta: number) => {
   arr.splice(index, 1)
   arr.splice(next, 0, item)
   projects.value = arr
-  saveToStorage()
+  await saveToStorage()
 }
 
 const onPickImage = async (e: Event) => {
@@ -950,7 +942,7 @@ const fileToDataUrl = (file: File) =>
 
 const useExampleImage = async () => {
   if (!isClient()) return
-  form.value.imageDataUrl = await fetchToDataUrl("/factory-layout.png")
+  form.value.imageDataUrl = await fetchToDataUrl("/factory-layout.jpg")
 }
 
 const fetchToDataUrl = async (url: string) => {
@@ -960,7 +952,7 @@ const fetchToDataUrl = async (url: string) => {
   return await fileToDataUrl(f)
 }
 
-const addPartnerLogo = () => {
+const addPartnerLogo = async () => {
   const imageDataUrl = partnerForm.value.imageDataUrl || ""
   if (!imageDataUrl) {
     if (isClient()) window.alert("กรุณาเลือกรูปโลโก้ก่อน")
@@ -976,42 +968,44 @@ const addPartnerLogo = () => {
   }
 
   partnerLogos.value = [row, ...partnerLogos.value]
-  savePartnersToStorage()
+  await savePartnersToStorage()
   partnerForm.value = { name: "", imageDataUrl: "" }
 }
 
-const removePartnerLogo = (id: string) => {
+const removePartnerLogo = async (id: string) => {
   if (!isClient()) return
   if (!window.confirm("ลบโลโก้นี้ใช่ไหม?")) return
   partnerLogos.value = partnerLogos.value.filter((x) => x.id !== id)
-  savePartnersToStorage()
+  await savePartnersToStorage()
 }
 
-const clearAllPartners = () => {
+const clearAllPartners = async () => {
   if (!isClient()) return
   if (!window.confirm("ลบโลโก้ทั้งหมดใช่ไหม?")) return
   partnerLogos.value = []
-  savePartnersToStorage()
+  await savePartnersToStorage()
 }
 
-const removeContactMessage = (id: string) => {
+const removeContactMessage = async (id: string) => {
   if (!isClient()) return
   if (!window.confirm("Delete this message?")) return
   contactMessages.value = contactMessages.value.filter((x) => x.id !== id)
-  saveContactMessagesToStorage()
+  await saveContactMessagesToStorage()
 }
 
-const clearAllContactMessages = () => {
+const clearAllContactMessages = async () => {
   if (!isClient()) return
   if (!window.confirm("Delete all messages?")) return
   contactMessages.value = []
-  saveContactMessagesToStorage()
+  await saveContactMessagesToStorage()
 }
 
 onMounted(() => {
-  loadFromStorage()
-  loadPartnersFromStorage()
-  loadContactMessagesFromStorage()
+  Promise.all([
+    loadFromStorage(),
+    loadPartnersFromStorage(),
+    loadContactMessagesFromStorage(),
+  ])
 })
 </script>
 

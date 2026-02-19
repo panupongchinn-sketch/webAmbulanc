@@ -210,7 +210,8 @@ type ContactMessageRow = ContactForm & {
   created_at: string
 }
 
-const CONTACT_STORAGE_KEY = "yushi_contact_messages"
+const CONTACT_STORAGE_KEY = "contact_messages"
+const { getValue, setValue } = useSharedStore()
 
 const form = ref<ContactForm>({
   full_name: "",
@@ -232,22 +233,6 @@ const uid = () => {
     return (globalThis as any).crypto.randomUUID() as string
   }
   return `c_${Math.random().toString(16).slice(2)}_${Date.now()}`
-}
-
-const loadContactMessages = (): ContactMessageRow[] => {
-  if (typeof window === "undefined") return []
-  try {
-    const rawStorage = window.localStorage.getItem(CONTACT_STORAGE_KEY)
-    const arr = rawStorage ? (JSON.parse(rawStorage) as ContactMessageRow[]) : []
-    return Array.isArray(arr) ? arr : []
-  } catch {
-    return []
-  }
-}
-
-const saveContactMessages = (rows: ContactMessageRow[]) => {
-  if (typeof window === "undefined") return
-  window.localStorage.setItem(CONTACT_STORAGE_KEY, JSON.stringify(rows))
 }
 
 const resetForm = () => {
@@ -287,9 +272,9 @@ const submit = async () => {
       created_at: nowIso(),
     }
 
-    const rows = loadContactMessages()
+    const rows = await getValue<ContactMessageRow>(CONTACT_STORAGE_KEY)
     rows.unshift(payload)
-    saveContactMessages(rows)
+    await setValue<ContactMessageRow>(CONTACT_STORAGE_KEY, rows)
 
     resetForm()
     success.value = true

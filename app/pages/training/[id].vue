@@ -114,7 +114,8 @@ type TrainingCourseRow = {
 }
 
 const route = useRoute()
-const TRAINING_KEY = "yushi_training_courses"
+const TRAINING_KEY = "training_courses"
+const { getValue } = useSharedStore()
 
 const id = computed(() => String(route.params.id || ""))
 
@@ -127,13 +128,7 @@ const loadCourse = async () => {
   loading.value = true
   error.value = ""
   try {
-    if (typeof window === "undefined") {
-      course.value = null
-      return
-    }
-    const raw = localStorage.getItem(TRAINING_KEY)
-    const rows = raw ? JSON.parse(raw) : []
-    const list = Array.isArray(rows) ? (rows as TrainingCourseRow[]) : []
+    const list = await getValue<TrainingCourseRow>(TRAINING_KEY)
     course.value = list.find((x) => String(x.id) === id.value) || null
     if (!course.value) error.value = "ไม่พบคอร์สนี้ (id ไม่ถูกต้อง)"
   } catch (err: any) {

@@ -199,7 +199,8 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
 
-const INVOICE_KEY = "yushi_invoice_requests";
+const INVOICE_KEY = "invoice_requests";
+const { getValue, setValue } = useSharedStore();
 
 type InvoiceInsert = {
   customer_name: string;
@@ -258,7 +259,6 @@ const submitInvoice = async () => {
       details: form.details.trim(),
     };
 
-    if (typeof window === "undefined") throw new Error("Client storage unavailable");
     const row = {
       id:
         typeof globalThis !== "undefined" && (globalThis as any).crypto?.randomUUID
@@ -267,10 +267,9 @@ const submitInvoice = async () => {
       ...payload,
       created_at: new Date().toISOString(),
     };
-    const raw = window.localStorage.getItem(INVOICE_KEY);
-    const rows = raw ? JSON.parse(raw) : [];
+    const rows = await getValue<any>(INVOICE_KEY);
     const nextRows = Array.isArray(rows) ? [row, ...rows] : [row];
-    window.localStorage.setItem(INVOICE_KEY, JSON.stringify(nextRows));
+    await setValue(INVOICE_KEY, nextRows);
 
     success.value = true;
     resetForm();

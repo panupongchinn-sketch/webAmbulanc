@@ -498,10 +498,12 @@ type PartnerLogoRow = {
   updatedAt: string
 }
 
-/** =================== PRODUCTS (LocalStorage) =================== */
-const PRODUCTS_KEY = "yushi_products"
+/** =================== PRODUCTS (Shared Store) =================== */
+const PRODUCTS_KEY = "products"
 const fallbackImg = "https://picsum.photos/seed/product/1200/900"
-const PARTNERS_KEY = "yushi_partner_logos"
+const PARTNERS_KEY = "partners"
+const PROJECTS_KEY = "projects"
+const { getValue } = useSharedStore()
 
 const products = ref<ProductRow[]>([])
 const loading = ref(true)
@@ -545,12 +547,7 @@ const loadProducts = async () => {
   loading.value = true
   error.value = ""
   try {
-    if (typeof window === "undefined") {
-      products.value = []
-      return
-    }
-    const raw = localStorage.getItem(PRODUCTS_KEY)
-    const arr = raw ? JSON.parse(raw) : []
+    const arr = await getValue<ProductRow>(PRODUCTS_KEY)
     products.value = Array.isArray(arr) ? (arr as ProductRow[]) : []
   } catch (err: any) {
     error.value = err?.message || "Failed to load products"
@@ -560,17 +557,12 @@ const loadProducts = async () => {
   }
 }
 
-/** =================== PROJECTS (LocalStorage) =================== */
-const PROJECTS_KEY = "yushi_projects"
-
 const projects = ref<ProjectRow[]>([])
 const projectsLoaded = ref(false)
 
-const loadProjectsLocal = () => {
-  if (typeof window === "undefined") return
+const loadProjectsLocal = async () => {
   try {
-    const raw = localStorage.getItem(PROJECTS_KEY)
-    const arr = raw ? JSON.parse(raw) : []
+    const arr = await getValue<ProjectRow>(PROJECTS_KEY)
     projects.value = Array.isArray(arr) ? arr : []
   } catch (e) {
     console.error("loadProjectsLocal error:", e)
@@ -580,11 +572,9 @@ const loadProjectsLocal = () => {
   }
 }
 
-const loadPartnerLogosLocal = () => {
-  if (typeof window === "undefined") return
+const loadPartnerLogosLocal = async () => {
   try {
-    const raw = localStorage.getItem(PARTNERS_KEY)
-    const arr = raw ? JSON.parse(raw) : []
+    const arr = await getValue<PartnerLogoRow>(PARTNERS_KEY)
     partnerLogos.value = Array.isArray(arr) ? arr : []
   } catch (e) {
     console.error("loadPartnerLogosLocal error:", e)

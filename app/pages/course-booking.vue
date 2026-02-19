@@ -204,7 +204,8 @@
 
 <script setup lang="ts">
 const route = useRoute()
-const CONTACT_MESSAGES_KEY = "yushi_contact_messages"
+const STORE_KEY = "contact_messages"
+const { getValue, setValue } = useSharedStore()
 
 useState<string>("mb_search_q", () => "")
 
@@ -272,11 +273,9 @@ const submit = async () => {
       created_at: new Date().toISOString(),
     }
 
-    if (typeof window === "undefined") throw new Error("Client storage unavailable")
-    const raw = window.localStorage.getItem(CONTACT_MESSAGES_KEY)
-    const rows = raw ? JSON.parse(raw) : []
+    const rows = await getValue<any>(STORE_KEY)
     const nextRows = Array.isArray(rows) ? [payload, ...rows] : [payload]
-    window.localStorage.setItem(CONTACT_MESSAGES_KEY, JSON.stringify(nextRows))
+    await setValue(STORE_KEY, nextRows)
 
     success.value = true
     resetForm()

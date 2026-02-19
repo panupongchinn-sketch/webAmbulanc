@@ -158,7 +158,8 @@ type ProductRow = {
 }
 
 const route = useRoute()
-const PRODUCTS_KEY = "yushi_products"
+const PRODUCTS_KEY = "products"
+const { getValue } = useSharedStore()
 
 const id = computed(() => String(route.params.id || ''))
 
@@ -175,13 +176,7 @@ const loadProduct = async () => {
   loading.value = true
   error.value = ''
   try {
-    if (typeof window === "undefined") {
-      product.value = null
-      return
-    }
-    const raw = localStorage.getItem(PRODUCTS_KEY)
-    const rows = raw ? JSON.parse(raw) : []
-    const list = Array.isArray(rows) ? (rows as ProductRow[]) : []
+    const list = await getValue<ProductRow>(PRODUCTS_KEY)
     product.value = list.find((x) => String(x.id) === id.value) || null
     if (!product.value) error.value = 'ไม่พบสินค้านี้ (id ไม่ถูกต้อง)'
   } catch (err: any) {
